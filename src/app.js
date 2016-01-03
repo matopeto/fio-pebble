@@ -95,7 +95,7 @@ function loadData() {
   
     showLoading();
 
-    var url = "https://www.fio.cz/ib_api/rest/periods/" + /* TODO escape token */ Settings.data('token') + "/" + end.format(DATE_URL_FORMAT) + "/" + start.format(DATE_URL_FORMAT) + "/transactions.json";
+    var url = "https://www.fio.cz/ib_api/rest/periods/" + encodeURIComponent(Settings.data('token')) + "/" + end.format(DATE_URL_FORMAT) + "/" + start.format(DATE_URL_FORMAT) + "/transactions.json";
     //console.log(url);
     ajax({
             url: url,
