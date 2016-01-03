@@ -1,0 +1,47 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "matoman+pebble@gmail.com",
+    "longName": "fio",
+    "projectType": "pebblejs",
+    "resources": {
+        "media": [
+            {
+                "file": "images/menu_icon.png",
+                "menuIcon": true,
+                "name": "IMAGE_MENU_ICON",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/logo_splash.png",
+                "name": "IMAGE_LOGO_SPLASH",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/tile_splash.png",
+                "name": "IMAGE_TILE_SPLASH",
+                "type": "bitmap"
+            },
+            {
+                "file": "fonts/UbuntuMono-Regular.ttf",
+                "name": "MONO_FONT_14",
+                "type": "font"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "fio",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "00001b52-6cbc-47ee-8946-10f3acff246b",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "hiddenApp": false,
+        "watchface": false
+    }
+}
