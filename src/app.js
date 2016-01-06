@@ -24,7 +24,7 @@ Settings.config({
         console.log('closed configurable');
 
         // Show the parsed response
-        console.log(JSON.stringify(e.options));
+        // console.log(JSON.stringify(e.options));
 
         // Show the raw response if parsing failed
         if (e.failed) {
