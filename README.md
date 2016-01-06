@@ -1,6 +1,7 @@
 # fio-pebble
 
 Jednoduchá aplikacia pre Pebble zobrazujúca zostatok a pohyby na danom Fio účte.
+Je napísan pomocou Pebble.js (https://developer.getpebble.com/docs/pebblejs/, https://github.com/pebble/pebblejs) v CloudPebble, ale nemal by byť problém to spustiť i s lokálnym SDK.
 
 Aplikácia využíva oficialne API popísané na stránkach http://www.fio.cz/bankovni-sluzby/api-bankovnictvi
 
