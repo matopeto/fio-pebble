@@ -4,13 +4,12 @@
         "configurable"
     ],
     "companyName": "matoman+pebble@gmail.com",
-    "longName": "fio",
+    "longName": "M\u016fj \u00fa\u010det",
     "projectType": "pebblejs",
     "resources": {
         "media": [
             {
                 "file": "images/menu_icon.png",
-                "menuIcon": true,
                 "name": "IMAGE_MENU_ICON",
                 "type": "bitmap"
             },
@@ -28,11 +27,17 @@
                 "file": "fonts/UbuntuMono-Regular.ttf",
                 "name": "MONO_FONT_14",
                 "type": "font"
+            },
+            {
+                "file": "images/app-icon.png",
+                "menuIcon": true,
+                "name": "IMAGES_APP_ICON_PNG",
+                "type": "bitmap"
             }
         ]
     },
     "sdkVersion": "3",
-    "shortName": "fio",
+    "shortName": "M\u016fj \u00fa\u010det",
     "targetPlatforms": [
         "aplite",
         "basalt"
