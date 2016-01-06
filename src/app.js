@@ -17,7 +17,7 @@ console.log("hasToken: " + Settings.option('hasToken'));
 
 // Set a configurable with just the close callback
 Settings.config({
-        url: 'http://pebble.hrincar.eu/fio/config/config.html',
+        url: 'https://matopeto.github.io/fio-pebble/config/config.html',
         autoSave: false,
     },
     function(e) {
