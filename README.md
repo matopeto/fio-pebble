@@ -9,6 +9,8 @@ Pre beh je nutné vygenerovat v Internet Bankingu API Token, ktorý sa vloží v
 
 Táto aplikácia ani autor nemá nič spoločné s Fio banka, a.s., jedná sa o neoficiálnu aplikáciu.
 
+Download priamo do Pebble: https://apps.getpebble.com/applications/568d16fa8cd1f81f97000059
+
 ## Ukážky
 
 ![alt sc1.png](https://raw.githubusercontent.com/matopeto/fio-pebble/master/assets/screens/sc1.png)
