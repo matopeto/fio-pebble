@@ -4,14 +4,21 @@ var Vector2 = require('vector2');
 var Settings = require('settings');
 var WindowStack = require('ui/windowstack');
 var moment = require('moment');
+var Pois = require('pois');
+var MachinesList = require('machines-list');
+var Feature = require('platform/feature');
 
 var HIGHLIGHT_COLOR = "islamicGreen";
 var NOT_PAIRED_BG_COLOR = "chromeYellow";
+var LOCATION_FAILED_BG_COLOR = "chromeYellow";
 var LOADING_BG_COLOR = "white";
+var STATUS_BAR = false;
 
 // Settings.data('token', undefined);
 // Settings.option('hasToken', undefined);
 // Settings.option('transactions', undefined);
+
+var _machines = null;
 
 console.log("hasToken: " + Settings.option('hasToken'));
 
@@ -55,11 +62,12 @@ var DATE_FORMAT_SHORT = "D.M.";
 var DATE_INPUT_FORMAT = "YYYY-MM-DDZZ";
 var DATE_URL_FORMAT = "YYYY-MM-DD";
 var APP_NAME = "Můj účet"; //Fio v Pebble";
+var RESOLUTION = Feature.resolution();
 
 var loadingWindow = new UI.Window({
     body: 'Nahrávám...',
     scrollable: false,
-    fullscreen: true,
+    status: STATUS_BAR,
     backgroundColor: LOADING_BG_COLOR,
 });
 
@@ -68,12 +76,12 @@ loadingWindow.add(new UI.Text({
         color: 'black',
         textAlign: 'center',
         position: new Vector2(0, 65),
-        size: new Vector2(144, 50),
+        size: RESOLUTION,
     }));
 
 
 var notPairedWindow = new UI.Card({
-    fullscreen: true,
+    status: STATUS_BAR,
     backgroundColor: NOT_PAIRED_BG_COLOR,
     body: 'Zadejte prosím aplikační API Token v nastaveních aplikace.',
 });
@@ -106,7 +114,6 @@ function loadData() {
             console.log("Data OK");
             //console.log('The item is: ' + JSON.stringify(data));
             showData(data.accountStatement);
-            clearWindowsStack();
         },
         function(error, status, request) {
             console.log("Download failed: Error: " + error + ", Status: " + status);
@@ -118,7 +125,7 @@ function loadData() {
             }
             
             new UI.Card({
-                fullscreen: true,
+                status: STATUS_BAR,
                 backgroundColor: NOT_PAIRED_BG_COLOR,
                 body: 'Nastala chyba. Zkontrolujte prosím připojení k internetu a zkuste to znovu.',
             }).show();
@@ -148,13 +155,18 @@ function showData(data) {
     }
     
     items.push({
+        title: "Bankomaty",
+        machines: true,   
+    });
+    
+    items.push({
         title: "QR Platba",
         qrAccount: account,   
     });
 
     var menu = new UI.Menu({
         highlightBackgroundColor: HIGHLIGHT_COLOR,
-        fullscreen: true,
+        status: STATUS_BAR,
         sections: [{
             title: APP_NAME,
             items: items,
@@ -166,11 +178,79 @@ function showData(data) {
             showTransactions(e.item.transactions);
         } else if (typeof(e.item.qrAccount) !== 'undefined') {
             showQrCode(e.item.qrAccount);
+        } else if (typeof(e.item.machines) !== 'undefined') {
+            loadLocation(showMachines, true);
         }
     });
 
     menu.show();
+    clearWindowsStack();
     menu.selection(1,1);
+    
+   loadLocation(function(lat, long)
+    {
+        //return;
+        if (_machines === null) {
+            _machines = new Pois(MachinesList);
+        }
+        
+        _machines.setNewLocation(lat, long); 
+        var nearest = _machines.getNearest(1);
+        var item = nearest[0];
+        menu.item(0, Settings.option("transactions") ? 2 : 1, {title: "Bankomaty", subtitle: Pois.getDistanceStr(item.distance) + ", " + item.address});
+    }, false);
+}
+
+function showNearest(lat, long) {
+    
+}
+
+function showMachine(item) {
+  var card = new UI.Card({
+        status: STATUS_BAR,
+        body: item.address + "\n" + item.city + "\n\n" + item.desc + "\n\n" + item.open,
+        style: 'small',
+        scrollable: true,
+    });
+
+    card.show();   
+}
+
+function showMachines(lat, long) {
+    if (_machines === null) {
+        _machines = new Pois(MachinesList);
+    }
+    
+    _machines.setNewLocation(lat, long);
+    var items = [];
+    var nearest = _machines.getNearest(10);
+    for (var i = 0; i < nearest.length; i++) {
+        var item = nearest[i];
+        items.push({
+            title: item.address,
+            subtitle: Pois.getDistanceStr(item.distance) + ", " + item.desc,
+            item: item,
+        });
+    }
+    
+    var menu = new UI.Menu({
+        highlightBackgroundColor: HIGHLIGHT_COLOR,
+        status: STATUS_BAR,
+        sections: [
+            {
+                title: "Bankomaty",
+                items: items,  
+            },
+        ],
+    });
+    
+        menu.on('select', function(e) {
+        if (typeof(e.item.item) !== 'undefined') {
+            showMachine(e.item.item);
+        }
+    });
+    
+    menu.show();
 }
 
 function showQrCode(account) {
@@ -179,12 +259,12 @@ function showQrCode(account) {
     }
 
     var wind = new UI.Window({
-        fullscreen: true
+        status: STATUS_BAR
     });
 
     var rect = new UI.Rect({
         position: new Vector2(0, 0),
-        size: new Vector2(144, 168),
+        size: RESOLUTION,
         backgroundColor: "white",
     });
 
@@ -193,7 +273,7 @@ function showQrCode(account) {
         color: 'black',
         textAlign: 'center',
         position: new Vector2(0, 60),
-        size: new Vector2(144, 50),
+        size: new Vector2(RESOLUTION.x, 50),
     });
 
     var infoText = new UI.Text({
@@ -201,7 +281,7 @@ function showQrCode(account) {
         color: 'black',
         textAlign: 'center',
         position: new Vector2(0, 8),
-        size: new Vector2(144, 50),
+        size: new Vector2(RESOLUTION.x, 50),
         font: "gothic-14",
     });
 
@@ -214,7 +294,7 @@ function showQrCode(account) {
     console.log(url);
 
     var image = new UI.Image({
-        position: new Vector2((144 - size) / 2, (168 - size) / 2),
+        position: new Vector2((RESOLUTION.x - size) / 2, (RESOLUTION.y - size) / 2),
         size: new Vector2(size, size),
         image: url,
     });
@@ -225,7 +305,7 @@ function showQrCode(account) {
 
 function showTransactions(transactions) {
     var menu = new UI.Menu({
-        fullscreen: true,
+        status: STATUS_BAR,
         highlightBackgroundColor: HIGHLIGHT_COLOR,
         sections: [{
             title: "Pohyby",
@@ -304,7 +384,7 @@ function showTransactionDetail(transaction) {
     body += getColumnString(transaction.column22);
 
     var card = new UI.Card({
-        fullscreen: true,
+        status: STATUS_BAR,
         body: body,
         style: 'small',
         scrollable: true,
@@ -364,5 +444,61 @@ Number.prototype.formatMoney = function(c, d, t) {
         j = (j = i.length) > 3 ? j % 3 : 0;
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
+
+function loadLocation(locationSuccess, showLoadingAndError) {
+    console.log("1");
+    var locationOptions = {
+        enableHighAccuracy: false,
+        maximumAge: 10000,
+        timeout: 10000
+    };
+        console.log("2");
+
+    if (showLoadingAndError) {
+    var locationLoading = new UI.Window({
+        scrollable: false,
+        status: STATUS_BAR,
+        backgroundColor: LOADING_BG_COLOR,
+    });
+
+    console.log("3");
+
+    locationLoading.add(new UI.Text({
+        text: "Čekám na polohu...",
+        color: 'black',
+        textAlign: 'center',
+        position: new Vector2(0, 65),
+        size: new Vector2(RESOLUTION.x, 50),
+    }));
+    
+    locationLoading.show();
+}
+    console.log("4");
+
+    //showLocationLoading();
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            var lat = pos.coords.latitude;
+            var long = pos.coords.longitude;
+            console.log('locationSuccess lat= ' + lat + ' lon= ' + long);
+              if (showLoadingAndError) {
+            locationLoading.hide();
+              }
+            locationSuccess(lat, long);
+        },
+        function(err) {
+            console.log('location error (' + err.code + '): ' + err.message);
+              if (showLoadingAndError) {
+            var failed = new UI.Card({
+                status: STATUS_BAR,
+                backgroundColor: LOCATION_FAILED_BG_COLOR,
+                body: 'Polohu se nepodařilo zjistit',
+            });
+            failed.show();
+            locationLoading.hide();
+              }
+        },
+        locationOptions);
+}
 
 loadData();
