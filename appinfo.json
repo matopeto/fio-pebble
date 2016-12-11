@@ -1,6 +1,7 @@
 {
     "appKeys": {},
     "capabilities": [
+        "location",
         "configurable"
     ],
     "companyName": "matoman+pebble@gmail.com",
@@ -40,7 +41,8 @@
     "shortName": "M\u016fj \u00fa\u010det",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "00001b52-6cbc-47ee-8946-10f3acff246b",
     "versionCode": 1,
