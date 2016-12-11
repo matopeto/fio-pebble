@@ -14,6 +14,8 @@ var Qr = require('gui/qr');
 var Utils = require('tools/utils');
 var Config = require('config');
 
+var _isEmulator = Pebble.getActiveWatchInfo && Pebble.getActiveWatchInfo().model.match(/^qemu_/);
+
 // Settings.data('token', undefined);
 // Settings.option('hasToken', undefined);
 // Settings.option('transactions', undefined);
@@ -224,6 +226,12 @@ function showData(data) {
         function(pos) {
             var lat = pos.coords.latitude;
             var long = pos.coords.longitude;
+            
+            if (_isEmulator) {
+                lat = 50.1010942;
+                long = 14.4320856;
+            }
+            
             console.log('locationSuccess lat= ' + lat + ' lon= ' + long);
             if (_atms === null) {
                 _atms = new Pois(AtmsList);
