@@ -24,38 +24,38 @@ console.log("hasToken: " + Settings.option('hasToken'));
 
 // Set a configurable with just the close callback
 Settings.config({
-        url: 'https://matopeto.github.io/fio-pebble/config/config.html',
-        autoSave: false,
-    },
-    function(e) {
-        console.log('closed configurable');
+    url: 'https://matopeto.github.io/fio-pebble/config/config.html',
+    autoSave: false,
+},
+                function(e) {
+                    console.log('closed configurable');
 
-        // Show the parsed response
-        // console.log(JSON.stringify(e.options));
+                    // Show the parsed response
+                    // console.log(JSON.stringify(e.options));
 
-        // Show the raw response if parsing failed
-        if (e.failed) {
-            console.log("Failed: " + e.response);
-            return;
-        }
-        // Options:
-        // token - new token, null if not changed, empty if removed.
-        // transactions - if transactions are showed.
+                    // Show the raw response if parsing failed
+                    if (e.failed) {
+                        console.log("Failed: " + e.response);
+                        return;
+                    }
+                    // Options:
+                    // token - new token, null if not changed, empty if removed.
+                    // transactions - if transactions are showed.
 
-        var token = e.options.token;
-        if (token !== null && typeof(token) !== 'undefined') {
-            Settings.data('token', token);
-            if (token !== "") {
-                Settings.option("hasToken", token.substr(0, 4) + "***");
-            } else {
-                Settings.option("hasToken", "");
-            }
-        }
+                    var token = e.options.token;
+                    if (token !== null && typeof(token) !== 'undefined') {
+                        Settings.data('token', token);
+                        if (token !== "") {
+                            Settings.option("hasToken", token.substr(0, 4) + "***");
+                        } else {
+                            Settings.option("hasToken", "");
+                        }
+                    }
 
-        Settings.option("transactions", e.options.transactions);
-        loadData();
-    }
-);
+                    Settings.option("transactions", e.options.transactions);
+                    loadData();
+                }
+               );
 
 var loadingWindow = new UI.Window({
     body: 'Nahrávám...',
@@ -100,6 +100,7 @@ function showLoading() {
 
 function loadData() {
     if (!Settings.option('hasToken')) {
+        Utils.clearApplicatioSubtitle();
         notPairedWindow.show();
         clearWindowsStack();
         return;
@@ -107,52 +108,63 @@ function loadData() {
 
     var start = moment();
     var end = moment(start).subtract(1, 'months');
-  
+
     showLoading();
 
     var url = "https://www.fio.cz/ib_api/rest/periods/" + encodeURIComponent(Settings.data('token')) + "/" + end.format(Config.DATE_URL_FORMAT) + "/" + start.format(Config.DATE_URL_FORMAT) + "/transactions.json";
     //console.log(url);
     ajax({
-            url: url,
-            type: 'json',
-            method: 'get',
-        },
-        function(data) {
-            console.log("Data OK");
-            //console.log('The item is: ' + JSON.stringify(data));
-            showData(data.accountStatement);
-        },
-        function(error, status, request) {
-            console.log("Download failed: Error: " + error + ", Status: " + status);
-            if (status == 409) {
-                // retry in 10 secondes.
-                setTimeout(loadData, 10000);
-                return;
-                // keep loading.
-            }
-            
-            new UI.Card({
-                status: Config.STATUS_BAR,
-                backgroundColor: Config.NOT_PAIRED_BG_COLOR,
-                body: 'Nastala chyba. Zkontrolujte prosím připojení k internetu a zkuste to znovu.',
-            }).show();
+        url: url,
+        type: 'json',
+        method: 'get',
+    },
+         function(data) {
+             console.log("Data OK");
+             //console.log('The item is: ' + JSON.stringify(data));
+             showData(data.accountStatement);
+         },
+         function(error, status, request) {
+             Utils.clearApplicatioSubtitle();
 
-            clearWindowsStack();
-        }
-    );
+             console.log("Download failed: Error: " + error + ", Status: " + status);
+             if (status == 409) {
+                 // retry in 10 secondes.
+                 setTimeout(loadData, 10000);
+                 return;
+                 // keep loading.
+             }
+
+             new UI.Card({
+                 status: Config.STATUS_BAR,
+                 backgroundColor: Config.NOT_PAIRED_BG_COLOR,
+                 body: 'Nastala chyba. Zkontrolujte prosím připojení k internetu a zkuste to znovu.',
+             }).show();
+
+             clearWindowsStack();
+         }
+        );
 }
 
 function showData(data) {
     var account = data.info;
     var transactions = data.transactionList === null ? [] : data.transactionList.transaction;
     transactions.reverse();
-    
+
     var items = [];
     items.push({
         title: Utils.formatMoney(account.closingBalance, account.currency),
         subtitle: "Zůstatek k " + moment(data.info.dateEnd, Config.DATE_INPUT_FORMAT).format(Config.DATE_FORMAT),
     });
-    
+
+    // Update Glance.
+    // Kč is not valid for glance, so show only Kc.
+    Utils.setApplicationSubtitle(
+        Utils.formatMoney(account.closingBalance, account.currency === "CZK" ? "Kc" : account.currency) +
+        " (" +
+        moment(data.info.dateEnd, Config.DATE_INPUT_FORMAT).format(Config.DATE_FORMAT) +
+        ")"
+    );
+
     if (Settings.option("transactions")) {
         items.push({
             title: "Pohyby",
@@ -160,12 +172,12 @@ function showData(data) {
             transactions: transactions,
         });
     }
-    
+
     items.push({
         title: "Bankomaty",
         atms: true,   
     });
-    
+
     items.push({
         title: "QR Platba",
         qrAccount: account,   
@@ -189,7 +201,7 @@ function showData(data) {
             if (_atms === null || _atms.locationSet === false) {
                 return;
             }
-            
+
             var nearest = _atms.getNearest(10);
             Atms.showAtms(nearest);
         }
@@ -198,14 +210,14 @@ function showData(data) {
     menu.show();
     clearWindowsStack();
     menu.selection(1,1);
-    
+
     // Loading location:
-   var locationOptions = {
+    var locationOptions = {
         enableHighAccuracy: false,
         maximumAge: 10000,
         timeout: 10000
     };
-    
+
     setAtmsMenuSubtitle(menu, "Hledám nejbliží...");
 
     navigator.geolocation.getCurrentPosition(
@@ -217,11 +229,11 @@ function showData(data) {
                 _atms = new Pois(AtmsList);
             }
             _atms.setNewLocation(lat, long); 
-            
+
             // Setting menu subtitle:
             var nearest = _atms.getNearest(1);
             var item = nearest[0];
-            
+
             setAtmsMenuSubtitle(menu, Utils.formatDistance(item.distance) + ", " + item.address);
         },
         function(err) {

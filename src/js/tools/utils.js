@@ -6,7 +6,7 @@ function formatMoney(amount, currency) {
 // TODO.
 function formatMoneyInternal(n, c, d, t) {
     var
-        c = isNaN(c = Math.abs(c)) ? 2 : c,
+    c = isNaN(c = Math.abs(c)) ? 2 : c,
         d = d == undefined ? "," : d,
         t = t == undefined ? " " : t,
         s = n < 0 ? "-" : "",
@@ -27,7 +27,31 @@ function formatDistance(distance) {
     return Math.round(distance, 2) + " km";
 }
 
+function setApplicationSubtitle(subtitle) {
+    if (!Pebble.appGlanceReload) {
+        return;
+    }
+
+    var appGlanceSlices = [{
+        "layout": {
+            "subtitleTemplateString": subtitle,
+        },
+    }];
+
+    Pebble.appGlanceReload(appGlanceSlices, null, null);
+}
+
+function clearApplicatioSubtitle() {
+    if (!Pebble.appGlanceReload) {
+        return;
+    }
+    
+    Pebble.appGlanceReload([], null, null);
+}
+
 module.exports = {
     formatMoney: formatMoney,
     formatDistance: formatDistance,
+    setApplicationSubtitle: setApplicationSubtitle,
+    clearApplicatioSubtitle: clearApplicatioSubtitle,
 };
