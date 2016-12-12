@@ -29,24 +29,41 @@ function formatDistance(distance) {
 
 function setApplicationSubtitle(subtitle) {
     if (!Pebble.appGlanceReload) {
+        console.log("appGlanceReload is not supported");
         return;
     }
 
-    var appGlanceSlices = [{
-        "layout": {
-            "subtitleTemplateString": subtitle,
-        },
-    }];
+    console.log("setApplicationSubtitle:");
 
-    Pebble.appGlanceReload(appGlanceSlices, null, null);
+    Pebble.appGlanceReload(
+        [{
+            layout: {
+                subtitleTemplateString: subtitle,
+            },
+        }],function (appGlanceSlices) {
+            console.log('AppGlanceReload is successful');
+        },
+        function (appGlanceSlices) {
+            console.log('AppGlanceReload has failed');
+        });
 }
 
 function clearApplicatioSubtitle() {
     if (!Pebble.appGlanceReload) {
+        console.log("appGlanceReload is not supported");
         return;
     }
-    
-    Pebble.appGlanceReload([], null, null);
+    console.log("clearApplicatioSubtitle");
+
+    Pebble.appGlanceReload(
+        [],
+        function (appGlanceSlices) {
+            console.log('AppGlanceReload is successful');
+        },
+        function (appGlanceSlices) {
+            console.log('AppGlanceReload has failed');
+        }
+    );
 }
 
 module.exports = {
