@@ -1,0 +1,39 @@
+{
+  "name": "muj-ucet-pebble",
+  "author": "Matej Hrincar",
+  "version": "1.2.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {
+    "pebblejs": "^1.0.0",
+    "moment": "^2.17.1"
+  },
+  "pebble": {
+    "displayName": "M\u016fj \u00fa\u010det",
+    "uuid": "00001b52-6cbc-47ee-8946-10f3acff246b",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "dummy"
+    ],
+    "resources": {
+        "media": [
+            {
+                "file": "images/app-icon.png",
+                "menuIcon": true,
+                "name": "IMAGES_APP_ICON_PNG",
+                "type": "bitmap"
+            }
+        ]
+    }
+  }
+}

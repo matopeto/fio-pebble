@@ -1,6 +1,6 @@
-var Config = require('config');
-var Utils = require('tools/utils');
-var UI = require('ui');
+var Config = require('../config');
+var Utils = require('../tools/utils');
+var UI = require('pebblejs/ui');
 
 function showAtms(nearest) {
     var items = [];

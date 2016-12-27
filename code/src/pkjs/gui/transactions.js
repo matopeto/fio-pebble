@@ -1,7 +1,7 @@
-var UI = require("ui");
-var config = require("config");
+var UI = require("pebblejs/ui");
+var config = require("../config");
 var moment = require("moment");
-var Utils = require("tools/utils");
+var Utils = require("../tools/utils");
 
 function showTransactions(transactions) {
     var menu = new UI.Menu({

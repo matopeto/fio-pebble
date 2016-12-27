@@ -1,18 +1,19 @@
-var UI = require('ui');
-var ajax = require('ajax');
-var Vector2 = require('vector2');
-var Settings = require('settings');
-var WindowStack = require('ui/windowstack');
+require('pebblejs');
+var UI = require('pebblejs/ui');
+var ajax = require('pebblejs/lib/ajax');
+var Vector2 = require('pebblejs/lib/vector2');
+var Settings = require('pebblejs/settings');
+var WindowStack = require('pebblejs/ui/windowstack');
 var moment = require('moment');
-var Pois = require('tools/pois');
-var AtmsList = require('data/atms');
+var Pois = require('./tools/pois');
+var AtmsList = require('./data/atms');
 
-var Transactions = require('gui/transactions');
-var Atms = require('gui/atms');
-var Qr = require('gui/qr');
+var Transactions = require('./gui/transactions');
+var Atms = require('./gui/atms');
+var Qr = require('./gui/qr');
 
-var Utils = require('tools/utils');
-var Config = require('config');
+var Utils = require('./tools/utils');
+var Config = require('./config');
 
 var _isEmulator = Pebble.getActiveWatchInfo && Pebble.getActiveWatchInfo().model.match(/^qemu_/);
 

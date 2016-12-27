@@ -1,4 +1,4 @@
-var Feature = require('platform/feature');
+var Feature = require('pebblejs/platform/feature');
 
 var Config = {
     APP_NAME: "Můj účet",

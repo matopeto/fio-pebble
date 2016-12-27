@@ -1,6 +1,6 @@
-var Config = require('config');
-var UI = require('ui');
-var Vector2 = require('vector2');
+var Config = require('../config');
+var UI = require('pebblejs/ui');
+var Vector2 = require('pebblejs/lib/vector2');
 
 function showQrCode(account) {
     if (account === null) {
